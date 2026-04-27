@@ -7,8 +7,8 @@ warnings.filterwarnings('ignore')
 
 
 # CONFIG 
-DATA_PATH   = r"C:\Users\hfras\Desktop\Classwork\Spring 2026\Data Warehousing\Final Project\Data"
-OUTPUT_PATH = r"C:\Users\hfras\Desktop\Classwork\Spring 2026\Data Warehousing\Final Project\Visualizations"
+DATA_PATH   = os.getenv("DATA_PATH", "./Data")
+OUTPUT_PATH = os.getenv("OUTPUT_PATH", "./Charts")
 
 import os
 os.makedirs(OUTPUT_PATH, exist_ok=True)

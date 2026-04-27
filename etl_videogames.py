@@ -16,7 +16,7 @@ DB_CONFIG = {
     "password": os.getenv("DB_PASSWORD"),
 }
 
-DATA_PATH = r"C:\Users\hfras\Desktop\Classwork\Spring 2026\Data Warehousing\Final Project\Data"
+DATA_PATH = os.getenv("DATA_PATH", "./Data")
 CSV_FILE  = "data.csv"
 
 # PLATFORM LOOKUP
@@ -130,11 +130,10 @@ def get_engine():
 # STEP 1: CREATE SCHEMAS
 
 def create_schemas(engine):
-    print("Creating schemas: src, dw, agg ...")
+    print("Creating schemas: src, dw ...")
     with engine.begin() as conn:
         conn.execute(text("CREATE SCHEMA IF NOT EXISTS src;"))
         conn.execute(text("CREATE SCHEMA IF NOT EXISTS dw;"))
-        conn.execute(text("CREATE SCHEMA IF NOT EXISTS agg;"))
     print("  ✓ Schemas ready")
 
 
@@ -567,126 +566,6 @@ def load_facts(engine, df):
 
 
 
-# STEP 6: CREATE AGG VIEWS
-
-AGG_DDL = """
--- ── Total sales by genre and year ────────────────────────────────
-CREATE OR REPLACE VIEW agg.sales_by_genre_year AS
-SELECT
-    d.year,
-    d.gaming_era,
-    g.genre_name,
-    g.genre_category,
-    ROUND(SUM(f.total_sales)::NUMERIC, 2)  AS total_sales_millions,
-    COUNT(DISTINCT f.game_key)             AS game_count,
-    ROUND(AVG(f.critic_score)::NUMERIC, 2) AS avg_critic_score
-FROM dw.fact_sales f
-JOIN dw.dim_date    d ON f.date_key  = d.date_key
-JOIN dw.dim_genre   g ON f.genre_key = g.genre_key
-WHERE d.year IS NOT NULL AND f.region_key = 1  -- avoid 4x counting
-GROUP BY d.year, d.gaming_era, g.genre_name, g.genre_category
-ORDER BY d.year, total_sales_millions DESC;
-
--- ── Sales by platform manufacturer and era ────────────────────────
-CREATE OR REPLACE VIEW agg.sales_by_manufacturer_era AS
-SELECT
-    d.gaming_era,
-    p.manufacturer,
-    p.platform_type,
-    ROUND(SUM(f.total_sales)::NUMERIC, 2) AS total_sales_millions,
-    COUNT(DISTINCT f.game_key)            AS game_count,
-    COUNT(DISTINCT p.platform_key)        AS platform_count
-FROM dw.fact_sales f
-JOIN dw.dim_date     d ON f.date_key     = d.date_key
-JOIN dw.dim_platform p ON f.platform_key = p.platform_key
-WHERE d.gaming_era != 'Unknown' AND f.region_key = 1
-GROUP BY d.gaming_era, p.manufacturer, p.platform_type
-ORDER BY d.gaming_era, total_sales_millions DESC;
-
--- ── Regional sales breakdown by year ─────────────────────────────
-CREATE OR REPLACE VIEW agg.regional_sales_by_year AS
-SELECT
-    d.year,
-    d.gaming_era,
-    r.region_name,
-    r.region_group,
-    ROUND(SUM(f.sales_millions)::NUMERIC, 2) AS sales_millions,
-    COUNT(DISTINCT f.game_key)               AS game_count
-FROM dw.fact_sales f
-JOIN dw.dim_date   d ON f.date_key   = d.date_key
-JOIN dw.dim_region r ON f.region_key = r.region_key
-WHERE d.year IS NOT NULL
-GROUP BY d.year, d.gaming_era, r.region_name, r.region_group
-ORDER BY d.year, sales_millions DESC;
-
--- ── Top publishers by total sales with critic score ───────────────
-CREATE OR REPLACE VIEW agg.publisher_performance AS
-SELECT
-    pb.publisher_name,
-    ROUND(SUM(f.total_sales)::NUMERIC, 2)  AS total_sales_millions,
-    COUNT(DISTINCT f.game_key)             AS titles_published,
-    ROUND(AVG(f.critic_score)::NUMERIC, 2) AS avg_critic_score,
-    MIN(d.year)                            AS first_year,
-    MAX(d.year)                            AS last_year
-FROM dw.fact_sales  f
-JOIN dw.dim_publisher pb ON f.publisher_key = pb.publisher_key
-JOIN dw.dim_date      d  ON f.date_key      = d.date_key
-WHERE f.region_key = 1
-GROUP BY pb.publisher_name
-ORDER BY total_sales_millions DESC NULLS LAST;
-
--- ── Score tier distribution by genre ─────────────────────────────
-CREATE OR REPLACE VIEW agg.score_tier_by_genre AS
-SELECT
-    g.genre_name,
-    gm.score_tier,
-    COUNT(*)                               AS game_count,
-    ROUND(AVG(f.total_sales)::NUMERIC, 4) AS avg_sales_millions
-FROM dw.fact_sales f
-JOIN dw.dim_genre g  ON f.genre_key = g.genre_key
-JOIN dw.dim_game  gm ON f.game_key  = gm.game_key
-WHERE f.region_key = 1
-GROUP BY g.genre_name, gm.score_tier
-ORDER BY g.genre_name, gm.score_tier;
-
--- ── ROLLUP: sales by manufacturer, platform type, generation ─────
-CREATE OR REPLACE VIEW agg.rollup_platform_hierarchy AS
-SELECT
-    p.manufacturer,
-    p.platform_type,
-    p.generation,
-    ROUND(SUM(f.total_sales)::NUMERIC, 2) AS total_sales_millions,
-    COUNT(DISTINCT f.game_key)            AS game_count
-FROM dw.fact_sales  f
-JOIN dw.dim_platform p ON f.platform_key = p.platform_key
-WHERE f.region_key = 1
-GROUP BY ROLLUP(p.manufacturer, p.platform_type, p.generation)
-ORDER BY p.manufacturer NULLS LAST, p.platform_type NULLS LAST, p.generation NULLS LAST;
-
--- ── SCD Type 2: games with tracked sales updates ──────────────────
-CREATE OR REPLACE VIEW agg.scd_updated_games AS
-SELECT
-    gm.title,
-    gm.score_tier,
-    gm.effective_date,
-    gm.expiry_date,
-    gm.is_current,
-    f.total_sales,
-    d.year
-FROM dw.dim_game  gm
-JOIN dw.fact_sales f ON gm.game_key  = f.game_key
-JOIN dw.dim_date   d ON f.date_key   = d.date_key
-WHERE gm.is_current = FALSE
-  AND f.region_key  = 1
-ORDER BY gm.title, gm.effective_date;
-"""
-
-def create_agg_views(engine):
-    print("\nCreating agg views ...")
-    with engine.begin() as conn:
-        conn.execute(text(AGG_DDL))
-    print("  ✓ agg views created")
-
 
 
 # MAIN
@@ -704,10 +583,10 @@ if __name__ == "__main__":
     seed_static_dimensions(engine)
     load_dimensions(engine, raw_df)
     load_facts(engine, raw_df)
-    create_agg_views(engine)
+  
 
     print("\n" + "=" * 55)
-    print("ETL complete.  Schemas: src | dw | agg")
+    print("ETL complete.  Schemas: src | dw ")
     print("  src.raw_video_games     — raw source data")
     print("  dw.dim_date             — date + gaming era")
     print("  dw.dim_platform         — console + manufacturer + type + gen")
@@ -717,5 +596,4 @@ if __name__ == "__main__":
     print("  dw.dim_game             — game title + score tier (SCD Type 2)")
     print("  dw.dim_region           — NA / JP / PAL / Other")
     print("  dw.fact_sales           — grain: game × platform × region")
-    print("  agg.*                   — 6 analytic views")
     print("=" * 55)
