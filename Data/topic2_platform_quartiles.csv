@@ -1,0 +1,25 @@
+"manufacturer","platform_name","generation","platform_type","total_sales_millions","title_count","sales_quartile"
+Microsoft,Xbox Live Arcade,"7th Gen",Digital,0.20,8,1
+Sony,PlayStation Vita,"8th Gen",Handheld,63.02,675,1
+Sony,PlayStation Network,"7th Gen",Digital,3.81,15,1
+Nintendo,Virtual Console,"7th Gen",Digital,0.35,6,1
+Nintendo,Game Boy Color,"5th Gen",Handheld,4.34,3,1
+Nintendo,Game Boy,"4th Gen",Handheld,19.84,46,1
+Nintendo,Nintendo Wii U,"8th Gen",Home Console,35.42,148,1
+Sony,PlayStation Portable,"7th Gen",Handheld,245.29,1337,2
+Sony,PlayStation 4,"8th Gen",Home Console,539.92,906,2
+Nintendo,Nintendo Switch,"9th Gen",Hybrid,36.46,263,2
+Nintendo,Nintendo Entertainment System,"3rd Gen",Home Console,47.93,48,2
+Nintendo,Super Nintendo,"4th Gen",Home Console,65.71,197,2
+Microsoft,Xbox,"6th Gen",Home Console,232.05,836,2
+Nintendo,Nintendo 3DS,"8th Gen",Handheld,99.27,560,3
+Microsoft,Xbox One,"8th Gen",Home Console,268.96,524,3
+Nintendo,Nintendo 64,"5th Gen",Home Console,93.79,278,3
+Nintendo,GameCube,"6th Gen",Home Console,119.53,528,3
+Sony,PlayStation,"5th Gen",Home Console,546.25,1126,3
+Sony,PlayStation 3,"7th Gen",Home Console,839.70,1346,3
+Nintendo,Game Boy Advance,"6th Gen",Handheld,224.48,896,4
+Microsoft,Xbox 360,"7th Gen",Home Console,859.79,1301,4
+Sony,PlayStation 2,"6th Gen",Home Console,1027.76,2123,4
+Nintendo,Nintendo Wii,"7th Gen",Home Console,459.44,1355,4
+Nintendo,Nintendo DS,"7th Gen",Handheld,458.17,2388,4

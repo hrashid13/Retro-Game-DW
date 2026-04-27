@@ -1,0 +1,22 @@
+"gaming_era","genre_name","total_sales_millions","game_count","rank_in_era"
+"2nd Gen (1976-1982)",Shooter,18.11,16,1
+"2nd Gen (1976-1982)",Action,16.87,31,2
+"2nd Gen (1976-1982)",Puzzle,3.27,5,3
+"3rd/4th Gen (1983-1992)",Platform,25.17,26,1
+"3rd/4th Gen (1983-1992)",Action,20.48,38,2
+"3rd/4th Gen (1983-1992)",Shooter,11.37,17,3
+"5th Gen (1993-1998)",Sports,89.91,207,1
+"5th Gen (1993-1998)",Fighting,71.36,141,2
+"5th Gen (1993-1998)",Racing,48.55,102,3
+"6th Gen (1999-2005)",Sports,372.74,712,1
+"6th Gen (1999-2005)",Action,301.33,602,2
+"6th Gen (1999-2005)",Racing,225.99,508,3
+"7th Gen (2006-2012)",Action,502.58,929,1
+"7th Gen (2006-2012)",Sports,473.35,851,2
+"7th Gen (2006-2012)",Shooter,426.35,460,3
+"8th Gen (2013-2019)",Shooter,322.11,161,1
+"8th Gen (2013-2019)",Action,244.46,494,2
+"8th Gen (2013-2019)",Sports,237.55,162,3
+"9th Gen (2020+)",Role-Playing,1.89,6,1
+"9th Gen (2020+)",Action,0.40,5,2
+"9th Gen (2020+)",Misc,0.34,5,3
