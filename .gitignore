@@ -1,0 +1,11 @@
+# Environment variables — never commit this
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Data files
+*.csv
+*.xlsx
